@@ -12,16 +12,19 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// Import OmniPay routes
+// Import routes
 const omniPayRoutes = require('./routes/omnipay');
+const independentGatewayRoutes = require('./routes/independent-gateway');
+
 app.use('/api/omnipay', omniPayRoutes);
+app.use('/api/gateway', independentGatewayRoutes);
 
 // In-memory storage (use Redis/MongoDB in production)
 const wallets = new Map();
 const transactions = new Map();
 
 // ============================================
-// ANONYMOUS WALLET GENERATION
+// ANONYMOUS WALLET GENERATION (GhostPay)
 // ============================================
 
 class AnonymousWallet {
@@ -103,7 +106,7 @@ class AnonymousTransaction {
 }
 
 // ============================================
-// API ENDPOINTS
+// GHOSTPAY API ENDPOINTS
 // ============================================
 
 // Create anonymous wallet
@@ -294,8 +297,8 @@ app.get('/api/stats', (req, res) => {
         '✅ Stealth Addresses (Anonymous)',
         '✅ Zero Knowledge Proofs',
         '✅ Tor-Ready Architecture',
-        '✅ Multi-Currency Support (USD, INR, USDT)',
-        '✅ UPI Integration'
+        '✅ Independent Payment Gateway (PayX)',
+        '✅ Direct UPI/Crypto/Bank Integration'
       ]
     }
   });
@@ -306,21 +309,27 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'online', 
     privacy: 'maximum',
-    features: ['GhostPay', 'OmniPay']
+    features: ['GhostPay', 'OmniPay', 'PayX']
   });
 });
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`🔒 GhostPay + OmniPay Gateway running on port ${PORT}`);
-  console.log(`🌐 Access: http://localhost:${PORT}`);
-  console.log(`💰 OmniPay: http://localhost:${PORT}/omnipay.html`);
-  console.log(`👻 GhostPay: http://localhost:${PORT}/index.html`);
-  console.log(`\n✨ Features:`);
-  console.log(`   - Anonymous Crypto Payments (GhostPay)`);
-  console.log(`   - Multi-Currency Gateway (OmniPay)`);
-  console.log(`   - USD, INR, USDT Support`);
-  console.log(`   - UPI Integration`);
-  console.log(`   - Auto Currency Conversion`);
-  console.log(`\n⚠️  For educational purposes only`);
+  console.log(`\n🚀 ============================================`);
+  console.log(`   PAYMENT GATEWAY SERVER RUNNING`);
+  console.log(`   ============================================\n`);
+  console.log(`   🌐 Server: http://localhost:${PORT}`);
+  console.log(`\n   📱 APPLICATIONS:`);
+  console.log(`   ├─ PayX (Independent):  /payx.html`);
+  console.log(`   ├─ OmniPay (Multi):     /omnipay.html`);
+  console.log(`   └─ GhostPay (Anonymous):/index.html`);
+  console.log(`\n   ✨ FEATURES:`);
+  console.log(`   ├─ 🏦 Direct UPI Integration`);
+  console.log(`   ├─ 💰 Direct Crypto Payments`);
+  console.log(`   ├─ 🏧 Direct Bank Transfers`);
+  console.log(`   ├─ 🔄 Multi-Currency Support`);
+  console.log(`   ├─ 👻 Anonymous Payments`);
+  console.log(`   └─ 🚫 NO Third-Party Fees`);
+  console.log(`\n   ⚠️  For educational purposes only`);
+  console.log(`   ============================================\n`);
 });
