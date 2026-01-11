@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💪 100% Independent Payment System</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 1.3em;
+            margin-top: 10px;
+            opacity: 0.95;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: 700;
+            margin-top: 15px;
+            font-size: 1.1em;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            transition: transform 0.3s;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .feature .title {
+            font-size: 1.1em;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feature .desc {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 25px;
+            font-size: 2em;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .payment-method {
+            padding: 25px;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+            transform: scale(1.05);
+        }
+
+        .payment-method.active {
+            border-color: #667eea;
+            background: #f8f9ff;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .payment-method .icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .payment-method .name {
+            font-size: 1.1em;
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .payment-method .fee {
+            font-size: 0.9em;
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: 600;
+            font-size: 1.05em;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1.05em;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.3em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .payment-details {
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .payment-details.show {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+
+        .payment-details h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .qr-code {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .qr-code img {
+            max-width: 300px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .info-item label {
+            display: block;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+
+        .info-item .value {
+            color: #333;
+            font-size: 1.1em;
+            font-weight: 600;
+            word-break: break-all;
+        }
+
+        .instructions {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .instructions h4 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+            color: #856404;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .verify-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px dashed #ddd;
+        }
+
+        .success-message {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 25px;
+            display: none;
+            text-align: center;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+
+        .success-message h3 {
+            color: #28a745;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 25px auto;
+            display: none;
+        }
+
+        .loader.show {
+            display: block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .savings-banner {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .savings-banner h3 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .savings-banner p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💪 Independent Payment System</h1>
+            <p class="subtitle">100% Your Control • Zero Platform Fees</p>
+            <span class="badge">NO Razorpay • NO Stripe • NO Third Party</span>
+        </div>
+
+        <div class="savings-banner">
+            <h3>💰 Keep 100% of Your Money!</h3>
+            <p>Zero platform fees • Instant settlement • Full control</p>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="icon">📱</div>
+                <div class="title">Direct UPI</div>
+                <div class="desc">To YOUR UPI ID</div>
+            </div>
+            <div class="feature">
+                <div class="icon">🏦</div>
+                <div class="title">Direct Bank</div>
+                <div class="desc">To YOUR Account</div>
+            </div>
+            <div class="feature">
+                <div class="icon">💰</div>
+                <div class="title">Direct Crypto</div>
+                <div class="desc">To YOUR Wallet</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💳 Create Payment</h2>
+
+            <div class="payment-methods">
+                <div class="payment-method" onclick="selectMethod('UPI')">
+                    <div class="icon">📱</div>
+                    <div class="name">UPI</div>
+                    <div class="fee">0% Fees</div>
+                </div>
+                <div class="payment-method" onclick="selectMethod('BANK')">
+                    <div class="icon">🏦</div>
+                    <div class="name">Bank Transfer</div>
+                    <div class="fee">0% Fees</div>
+                </div>
+                <div class="payment-method" onclick="selectMethod('CRYPTO')">
+                    <div class="icon">💰</div>
+                    <div class="name">Crypto (USDT)</div>
+                    <div class="fee">0% Fees</div>
+                </div>
+            </div>
+
+            <form id="paymentForm">
+                <div class="input-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="amount" placeholder="500" required min="10" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label>Your Email</label>
+                    <input type="email" id="customerEmail" placeholder="customer@example.com" required>
+                </div>
+
+                <div class="input-group" id="phoneGroup">
+                    <label>Phone Number</label>
+                    <input type="tel" id="customerPhone" placeholder="9876543210" pattern="[0-9]{10}">
+                </div>
+
+                <button type="submit" class="btn" id="createBtn">
+                    🚀 Create Payment
+                </button>
+            </form>
+
+            <div class="loader" id="loader"></div>
+            <div class="error-message" id="errorMessage"></div>
+
+            <div class="payment-details" id="paymentDetails">
+                <!-- Payment details will be shown here -->
+            </div>
+
+            <div class="success-message" id="successMessage">
+                <h3>✅ Payment Verified!</h3>
+                <p>Your payment has been confirmed successfully.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+        let selectedMethod = 'UPI';
+        let currentOrderId = null;
+
+        function selectMethod(method) {
+            selectedMethod = method;
+            
+            // Update UI
+            document.querySelectorAll('.payment-method').forEach(el => {
+                el.classList.remove('active');
+            });
+            event.target.closest('.payment-method').classList.add('active');
+
+            // Show/hide phone field
+            const phoneGroup = document.getElementById('phoneGroup');
+            if (method === 'UPI') {
+                phoneGroup.style.display = 'block';
+            } else {
+                phoneGroup.style.display = 'none';
+            }
+        }
+
+        // Select UPI by default
+        document.querySelector('.payment-method').classList.add('active');
+
+        document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const amount = document.getElementById('amount').value;
+            const customerEmail = document.getElementById('customerEmail').value;
+            const customerPhone = document.getElementById('customerPhone').value;
+
+            if (!amount || !customerEmail) {
+                showError('Please fill all required fields');
+                return;
+            }
+
+            // Show loader
+            document.getElementById('loader').classList.add('show');
+            document.getElementById('createBtn').disabled = true;
+            document.getElementById('paymentDetails').classList.remove('show');
+            document.getElementById('errorMessage').classList.remove('show');
+
+            try {
+                const response = await fetch(`${API_URL}/api/independent/create-payment`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        amount: parseFloat(amount),
+                        paymentMethod: selectedMethod,
+                        customerEmail,
+                        customerPhone: selectedMethod === 'UPI' ? customerPhone : undefined,
+                        currency: 'INR'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentOrderId = data.orderId;
+                    displayPaymentDetails(data, selectedMethod);
+                } else {
+                    showError(data.error || 'Failed to create payment');
+                }
+            } catch (error) {
+                showError('Error: ' + error.message);
+            } finally {
+                document.getElementById('loader').classList.remove('show');
+                document.getElementById('createBtn').disabled = false;
+            }
+        });
+
+        function displayPaymentDetails(data, method) {
+            const detailsDiv = document.getElementById('paymentDetails');
+            let html = `<h3>💳 Payment Details</h3>`;
+
+            if (method === 'UPI') {
+                html += `
+                    <div class="qr-code">
+                        <img src="${data.qrCode}" alt="UPI QR Code">
+                    </div>
+                    <div class="info-item">
+                        <label>UPI ID:</label>
+                        <div class="value">${data.upiId}</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Amount:</label>
+                        <div class="value">₹${data.amount}</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Order ID:</label>
+                        <div class="value">${data.orderId}</div>
+                    </div>
+                    <div class="instructions">
+                        <h4>📱 Instructions:</h4>
+                        <ol>
+                            ${data.instructions.map(i => `<li>${i}</li>`).join('')}
+                        </ol>
+                    </div>
+                    <div class="verify-section">
+                        <h4 style="margin-bottom: 15px;">✅ Verify Payment</h4>
+                        <div class="input-group">
+                            <label>Enter UTR Number:</label>
+                            <input type="text" id="utrInput" placeholder="123456789012">
+                        </div>
+                        <button class="btn" onclick="verifyPayment()">Verify Payment</button>
+                    </div>
+                `;
+            } else if (method === 'BANK') {
+                html += `
+                    <div class="info-item">
+                        <label>Account Name:</label>
+                        <div class="value">${data.bankDetails.accountName}</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Account Number:</label>
+                        <div class="value">${data.bankDetails.accountNumber}</div>
+                    </div>
+                    <div class="info-item">
+                        <label>IFSC Code:</label>
+                        <div class="value">${data.bankDetails.ifsc}</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Bank Name:</label>
+                        <div class="value">${data.bankDetails.bankName}</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Amount:</label>
+                        <div class="value">₹${data.amount}</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Reference:</label>
+                        <div class="value">${data.bankDetails.reference}</div>
+                    </div>
+                    <div class="instructions">
+                        <h4>🏦 Instructions:</h4>
+                        <ol>
+                            ${data.instructions.map(i => `<li>${i}</li>`).join('')}
+                        </ol>
+                    </div>
+                    <div class="verify-section">
+                        <h4 style="margin-bottom: 15px;">✅ Verify Payment</h4>
+                        <div class="input-group">
+                            <label>Enter UTR/Reference Number:</label>
+                            <input type="text" id="utrInput" placeholder="UTR or Reference Number">
+                        </div>
+                        <button class="btn" onclick="verifyPayment()">Verify Payment</button>
+                    </div>
+                `;
+            } else if (method === 'CRYPTO') {
+                html += `
+                    <div class="qr-code">
+                        <img src="${data.qrCode}" alt="Crypto QR Code">
+                    </div>
+                    <div class="info-item">
+                        <label>Crypto Type:</label>
+                        <div class="value">${data.cryptoType} (${data.network})</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Wallet Address:</label>
+                        <div class="value">${data.address}</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Amount:</label>
+                        <div class="value">${data.amount} USDT</div>
+                    </div>
+                    <div class="info-item">
+                        <label>Order ID:</label>
+                        <div class="value">${data.orderId}</div>
+                    </div>
+                    <div class="instructions">
+                        <h4>💰 Instructions:</h4>
+                        <ol>
+                            ${data.instructions.map(i => `<li>${i}</li>`).join('')}
+                        </ol>
+                    </div>
+                    <div class="verify-section">
+                        <h4 style="margin-bottom: 15px;">✅ Verify Payment</h4>
+                        <div class="input-group">
+                            <label>Enter Transaction Hash:</label>
+                            <input type="text" id="txHashInput" placeholder="Transaction Hash">
+                        </div>
+                        <button class="btn" onclick="verifyCryptoPayment()">Verify Payment</button>
+                    </div>
+                `;
+            }
+
+            detailsDiv.innerHTML = html;
+            detailsDiv.classList.add('show');
+        }
+
+        async function verifyPayment() {
+            const utr = document.getElementById('utrInput').value;
+
+            if (!utr) {
+                showError('Please enter UTR number');
+                return;
+            }
+
+            document.getElementById('loader').classList.add('show');
+
+            try {
+                const response = await fetch(`${API_URL}/api/independent/verify-payment`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        orderId: currentOrderId,
+                        utr,
+                        paymentMethod: selectedMethod
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('paymentDetails').classList.remove('show');
+                    document.getElementById('successMessage').classList.add('show');
+                } else {
+                    showError(data.error || 'Payment verification failed');
+                }
+            } catch (error) {
+                showError('Error: ' + error.message);
+            } finally {
+                document.getElementById('loader').classList.remove('show');
+            }
+        }
+
+        async function verifyCryptoPayment() {
+            const txHash = document.getElementById('txHashInput').value;
+
+            if (!txHash) {
+                showError('Please enter transaction hash');
+                return;
+            }
+
+            document.getElementById('loader').classList.add('show');
+
+            try {
+                const response = await fetch(`${API_URL}/api/independent/verify-payment`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        orderId: currentOrderId,
+                        txHash,
+                        paymentMethod: 'CRYPTO'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('paymentDetails').classList.remove('show');
+                    document.getElementById('successMessage').classList.add('show');
+                } else {
+                    showError(data.error || 'Payment verification failed');
+                }
+            } catch (error) {
+                showError('Error: ' + error.message);
+            } finally {
+                document.getElementById('loader').classList.remove('show');
+            }
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
