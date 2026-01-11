@@ -12,6 +12,10 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
+// Import OmniPay routes
+const omniPayRoutes = require('./routes/omnipay');
+app.use('/api/omnipay', omniPayRoutes);
+
 // In-memory storage (use Redis/MongoDB in production)
 const wallets = new Map();
 const transactions = new Map();
@@ -289,7 +293,9 @@ app.get('/api/stats', (req, res) => {
         '✅ Ring Signatures (Untraceable)',
         '✅ Stealth Addresses (Anonymous)',
         '✅ Zero Knowledge Proofs',
-        '✅ Tor-Ready Architecture'
+        '✅ Tor-Ready Architecture',
+        '✅ Multi-Currency Support (USD, INR, USDT)',
+        '✅ UPI Integration'
       ]
     }
   });
@@ -297,13 +303,24 @@ app.get('/api/stats', (req, res) => {
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'online', privacy: 'maximum' });
+  res.json({ 
+    status: 'online', 
+    privacy: 'maximum',
+    features: ['GhostPay', 'OmniPay']
+  });
 });
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`🔒 GhostPay Anonymous Gateway running on port ${PORT}`);
+  console.log(`🔒 GhostPay + OmniPay Gateway running on port ${PORT}`);
   console.log(`🌐 Access: http://localhost:${PORT}`);
-  console.log(`👻 Privacy Level: MAXIMUM`);
-  console.log(`⚠️  For educational purposes only`);
+  console.log(`💰 OmniPay: http://localhost:${PORT}/omnipay.html`);
+  console.log(`👻 GhostPay: http://localhost:${PORT}/index.html`);
+  console.log(`\n✨ Features:`);
+  console.log(`   - Anonymous Crypto Payments (GhostPay)`);
+  console.log(`   - Multi-Currency Gateway (OmniPay)`);
+  console.log(`   - USD, INR, USDT Support`);
+  console.log(`   - UPI Integration`);
+  console.log(`   - Auto Currency Conversion`);
+  console.log(`\n⚠️  For educational purposes only`);
 });
