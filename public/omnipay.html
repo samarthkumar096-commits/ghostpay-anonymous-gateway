@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 OmniPay - Universal Payment Gateway</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.9;
+        }
+
+        .currency-badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.15em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            background: white;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-item strong {
+            color: #333;
+        }
+
+        .result-item span {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .qr-section {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .qr-code {
+            width: 250px;
+            height: 250px;
+            margin: 20px auto;
+            background: #f0f0f0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+        }
+
+        .instructions {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .instructions ol {
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin: 10px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .conversion-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .conversion-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .conversion-card .amount {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .conversion-card .currency {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+
+        .success {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+        }
+
+        @media (max-width: 968px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .conversion-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 OmniPay</h1>
+            <p>Universal Payment Gateway</p>
+            <div class="currency-badges">
+                <span class="badge">💵 USD</span>
+                <span class="badge">₹ INR</span>
+                <span class="badge">₮ USDT</span>
+                <span class="badge">📱 UPI</span>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <!-- Payment Creation -->
+            <div class="card">
+                <h2>💳 Create Payment</h2>
+                <div class="input-group">
+                    <label>Amount</label>
+                    <input type="number" id="amount" placeholder="100" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>Currency</label>
+                    <select id="currency">
+                        <option value="INR">INR (₹ Indian Rupees)</option>
+                        <option value="USD">USD ($ US Dollar)</option>
+                        <option value="USDT">USDT (₮ Tether)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Payment Method</label>
+                    <select id="paymentMethod">
+                        <option value="UPI">UPI (Google Pay, PhonePe, Paytm)</option>
+                        <option value="USDT">USDT (Crypto - TRC20)</option>
+                        <option value="CARD">Card (Visa, Mastercard)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Customer Email (Optional)</label>
+                    <input type="email" id="email" placeholder="customer@example.com">
+                </div>
+                <div class="input-group">
+                    <label>Description (Optional)</label>
+                    <input type="text" id="description" placeholder="Payment for...">
+                </div>
+                <button class="btn" onclick="createPayment()">Create Payment Request</button>
+                
+                <div id="paymentResult" class="result"></div>
+            </div>
+
+            <!-- Currency Converter -->
+            <div class="card">
+                <h2>🔄 Currency Converter</h2>
+                <div class="input-group">
+                    <label>Amount</label>
+                    <input type="number" id="convertAmount" placeholder="100" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>From Currency</label>
+                    <select id="fromCurrency">
+                        <option value="INR">INR (₹)</option>
+                        <option value="USD">USD ($)</option>
+                        <option value="USDT">USDT (₮)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>To Currency</label>
+                    <select id="toCurrency">
+                        <option value="USD">USD ($)</option>
+                        <option value="INR">INR (₹)</option>
+                        <option value="USDT">USDT (₮)</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="convertCurrency()">Convert</button>
+                
+                <div id="convertResult" class="result"></div>
+            </div>
+        </div>
+
+        <!-- Exchange Rates -->
+        <div class="card">
+            <h2>📊 Live Exchange Rates</h2>
+            <div id="ratesDisplay" class="conversion-grid">
+                <div class="conversion-card">
+                    <div class="currency">1 USD =</div>
+                    <div class="amount">₹83.12</div>
+                    <div class="currency">INR</div>
+                </div>
+                <div class="conversion-card">
+                    <div class="currency">1 USDT =</div>
+                    <div class="amount">$1.00</div>
+                    <div class="currency">USD</div>
+                </div>
+                <div class="conversion-card">
+                    <div class="currency">1 USDT =</div>
+                    <div class="amount">₹83.12</div>
+                    <div class="currency">INR</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+
+        async function createPayment() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            const currency = document.getElementById('currency').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const email = document.getElementById('email').value;
+            const description = document.getElementById('description').value;
+
+            if (!amount) {
+                alert('Please enter amount');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/omnipay/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount,
+                        currency,
+                        paymentMethod,
+                        customerEmail: email,
+                        description
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayPaymentResult(data);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function displayPaymentResult(data) {
+            const result = document.getElementById('paymentResult');
+            const { paymentRequest, paymentDetails } = data;
+
+            let html = `
+                <h3 class="success">✅ Payment Request Created!</h3>
+                <div class="result-item">
+                    <strong>Payment ID:</strong>
+                    <span>${paymentRequest.paymentId}</span>
+                </div>
+                <div class="result-item">
+                    <strong>Amount:</strong>
+                    <span>${paymentRequest.amount} ${paymentRequest.currency}</span>
+                </div>
+                <div class="result-item">
+                    <strong>Method:</strong>
+                    <span>${paymentDetails.method}</span>
+                </div>
+            `;
+
+            // Show conversions
+            html += '<h3 style="margin-top: 20px;">💱 Amount in All Currencies:</h3>';
+            html += '<div class="conversion-grid">';
+            for (let [curr, amt] of Object.entries(paymentRequest.conversions)) {
+                if (amt) {
+                    html += `
+                        <div class="conversion-card">
+                            <div class="currency">${curr}</div>
+                            <div class="amount">${amt}</div>
+                        </div>
+                    `;
+                }
+            }
+            html += '</div>';
+
+            // Show payment details
+            if (paymentDetails.method === 'UPI') {
+                html += `
+                    <div class="qr-section">
+                        <h3>📱 UPI Payment</h3>
+                        <div class="qr-code">📱</div>
+                        <p><strong>UPI ID:</strong> ${paymentDetails.upiId} 
+                            <button class="copy-btn" onclick="copyText('${paymentDetails.upiId}')">Copy</button>
+                        </p>
+                        <p><strong>Amount:</strong> ₹${paymentDetails.amount}</p>
+                        <div class="instructions">
+                            <h4>Instructions:</h4>
+                            <ol>
+                                ${paymentDetails.instructions.map(i => `<li>${i}</li>`).join('')}
+                            </ol>
+                        </div>
+                    </div>
+                `;
+            } else if (paymentDetails.method === 'USDT') {
+                html += `
+                    <div class="qr-section">
+                        <h3>₮ USDT Payment (${paymentDetails.network})</h3>
+                        <div class="qr-code">₮</div>
+                        <p><strong>Address:</strong> ${paymentDetails.address.substring(0, 20)}... 
+                            <button class="copy-btn" onclick="copyText('${paymentDetails.address}')">Copy</button>
+                        </p>
+                        <p><strong>Amount:</strong> ${paymentDetails.amount} USDT</p>
+                        <div class="warning">${paymentDetails.warning}</div>
+                        <div class="instructions">
+                            <h4>Instructions:</h4>
+                            <ol>
+                                ${paymentDetails.instructions.map(i => `<li>${i}</li>`).join('')}
+                            </ol>
+                        </div>
+                    </div>
+                `;
+            }
+
+            result.innerHTML = html;
+            result.classList.add('show');
+        }
+
+        async function convertCurrency() {
+            const amount = parseFloat(document.getElementById('convertAmount').value);
+            const fromCurrency = document.getElementById('fromCurrency').value;
+            const toCurrency = document.getElementById('toCurrency').value;
+
+            if (!amount) {
+                alert('Please enter amount');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/omnipay/convert`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount, fromCurrency, toCurrency })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const result = document.getElementById('convertResult');
+                    result.innerHTML = `
+                        <h3 class="success">✅ Conversion Complete!</h3>
+                        <div class="result-item">
+                            <strong>From:</strong>
+                            <span>${data.original.amount} ${data.original.currency}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>To:</strong>
+                            <span>${data.converted.amount} ${data.converted.currency}</span>
+                        </div>
+                        <div class="result-item">
+                            <strong>Exchange Rate:</strong>
+                            <span>${data.rate}</span>
+                        </div>
+                    `;
+                    result.classList.add('show');
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            alert('Copied to clipboard!');
+        }
+
+        // Load exchange rates on page load
+        async function loadRates() {
+            try {
+                const response = await fetch(`${API_URL}/api/omnipay/rates`);
+                const data = await response.json();
+                console.log('Exchange rates loaded:', data);
+            } catch (error) {
+                console.error('Error loading rates:', error);
+            }
+        }
+
+        loadRates();
+    </script>
+</body>
+</html>
