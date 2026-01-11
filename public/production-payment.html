@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💳 Production Payment Gateway - Real Transactions</title>
+    
+    <!-- Cashfree SDK -->
+    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 1.8em;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .payment-method {
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .payment-method:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .payment-method.active {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .payment-method .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .payment-method .name {
+            font-size: 0.9em;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-box li {
+            padding: 8px 0;
+            color: #666;
+        }
+
+        .info-box li:before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .success-message {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        .loader.show {
+            display: block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            color: white;
+        }
+
+        .feature .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .feature .text {
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💳 Payment Gateway</h1>
+            <p style="font-size: 1.2em; margin-top: 10px;">Production-Ready • Real Transactions</p>
+            <span class="badge">🔒 SECURE & VERIFIED</span>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="icon">⚡</div>
+                <div class="text">Instant Payment</div>
+            </div>
+            <div class="feature">
+                <div class="icon">🔒</div>
+                <div class="text">100% Secure</div>
+            </div>
+            <div class="feature">
+                <div class="icon">✅</div>
+                <div class="text">Verified Gateway</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💰 Make Payment</h2>
+
+            <div class="info-box">
+                <h3>Accepted Payment Methods:</h3>
+                <ul>
+                    <li>UPI (Google Pay, PhonePe, Paytm)</li>
+                    <li>Credit/Debit Cards</li>
+                    <li>Net Banking</li>
+                    <li>Wallets (Paytm, Mobikwik)</li>
+                </ul>
+            </div>
+
+            <form id="paymentForm">
+                <div class="input-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="amount" placeholder="500" required min="1" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label>Your Name</label>
+                    <input type="text" id="customerName" placeholder="John Doe" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="customerEmail" placeholder="john@example.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="customerPhone" placeholder="9876543210" required pattern="[0-9]{10}">
+                </div>
+
+                <button type="submit" class="btn" id="payBtn">
+                    🔒 Proceed to Secure Payment
+                </button>
+            </form>
+
+            <div class="loader" id="loader"></div>
+            <div class="success-message" id="successMessage"></div>
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <div class="card">
+            <h2>🔍 Check Payment Status</h2>
+            <div class="input-group">
+                <label>Order ID</label>
+                <input type="text" id="orderIdCheck" placeholder="ORDER_1234567890">
+            </div>
+            <button class="btn" onclick="checkPaymentStatus()">Check Status</button>
+            <div id="statusResult" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin;
+        let cashfree;
+
+        // Initialize Cashfree
+        const initializeCashfree = async () => {
+            cashfree = await Cashfree({
+                mode: "production" // Change to "sandbox" for testing
+            });
+        };
+
+        initializeCashfree();
+
+        // Handle form submission
+        document.getElementById('paymentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const amount = document.getElementById('amount').value;
+            const customerName = document.getElementById('customerName').value;
+            const customerEmail = document.getElementById('customerEmail').value;
+            const customerPhone = document.getElementById('customerPhone').value;
+
+            if (!amount || !customerEmail || !customerPhone) {
+                showError('Please fill all required fields');
+                return;
+            }
+
+            // Show loader
+            document.getElementById('loader').classList.add('show');
+            document.getElementById('payBtn').disabled = true;
+
+            try {
+                // Create order on backend
+                const response = await fetch(`${API_URL}/api/production/create-order`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        amount: parseFloat(amount),
+                        customerName,
+                        customerEmail,
+                        customerPhone
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Open Cashfree checkout
+                    const checkoutOptions = {
+                        paymentSessionId: data.paymentSessionId,
+                        returnUrl: `${API_URL}/payment-success.html?order_id=${data.orderId}`
+                    };
+
+                    cashfree.checkout(checkoutOptions).then((result) => {
+                        if (result.error) {
+                            showError(result.error.message);
+                        }
+                        if (result.redirect) {
+                            console.log("Redirection");
+                        }
+                        if (result.paymentDetails) {
+                            console.log("Payment completed");
+                            showSuccess(`Payment successful! Order ID: ${data.orderId}`);
+                        }
+                    });
+                } else {
+                    showError(data.error || 'Failed to create order');
+                }
+            } catch (error) {
+                showError('Error: ' + error.message);
+            } finally {
+                document.getElementById('loader').classList.remove('show');
+                document.getElementById('payBtn').disabled = false;
+            }
+        });
+
+        // Check payment status
+        async function checkPaymentStatus() {
+            const orderId = document.getElementById('orderIdCheck').value;
+
+            if (!orderId) {
+                alert('Please enter Order ID');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/api/production/order-status/${orderId}`);
+                const data = await response.json();
+
+                const resultDiv = document.getElementById('statusResult');
+
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div style="background: #d4edda; padding: 20px; border-radius: 12px; border: 2px solid #28a745;">
+                            <h3 style="color: #155724; margin-bottom: 15px;">Payment Status</h3>
+                            <p><strong>Order ID:</strong> ${data.orderId}</p>
+                            <p><strong>Status:</strong> <span style="color: ${data.paymentStatus === 'SUCCESS' ? '#28a745' : '#dc3545'}; font-weight: bold;">${data.paymentStatus}</span></p>
+                            <p><strong>Amount:</strong> ₹${data.paymentAmount}</p>
+                            <p><strong>Method:</strong> ${data.paymentMethod}</p>
+                            <p><strong>Payment ID:</strong> ${data.paymentId}</p>
+                            ${data.bankReference ? `<p><strong>Bank Reference:</strong> ${data.bankReference}</p>` : ''}
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div style="background: #f8d7da; padding: 20px; border-radius: 12px; border: 2px solid #dc3545;">
+                            <p style="color: #721c24;">${data.error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.add('show');
+            setTimeout(() => {
+                successDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
