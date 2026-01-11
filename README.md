@@ -1,6 +1,18 @@
 # 👻 GhostPay - Anonymous Crypto Payment Gateway
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/samarthkumar096-commits/ghostpay-anonymous-gateway)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
+
 **Fully anonymous UPI-style crypto payment system with zero bank involvement**
+
+## 🚀 One-Click Deploy
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/samarthkumar096-commits/ghostpay-anonymous-gateway)
+
+Click the button above to deploy instantly on Vercel!
+
+---
 
 ## 🔐 Features
 
@@ -15,12 +27,25 @@
 
 ## 🚀 Quick Start
 
+### Local Development
+
 ```bash
+git clone https://github.com/samarthkumar096-commits/ghostpay-anonymous-gateway.git
+cd ghostpay-anonymous-gateway
 npm install
 npm start
 ```
 
 Open browser: `http://localhost:3000`
+
+### Deploy to Vercel
+
+```bash
+npm install -g vercel
+vercel
+```
+
+Or use the one-click deploy button above!
 
 ## 📡 API Endpoints
 
@@ -111,6 +136,13 @@ This is a prototype demonstrating anonymous payment architecture. Real-world imp
 - **Privacy:** Ring Signatures simulation
 - **QR Codes:** qrcode library
 - **Frontend:** Vanilla JS + Modern CSS
+
+## 📚 Documentation
+
+- [Quick Start Guide](QUICKSTART.md)
+- [Architecture Details](ARCHITECTURE.md)
+- [Deployment Guide](DEPLOYMENT.md)
+- [Security Guide](SECURITY.md)
 
 ## 🔮 Future Enhancements
 
