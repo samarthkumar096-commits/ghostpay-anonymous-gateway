@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const crypto = require('crypto');
 const QRCode = require('qrcode');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -10,14 +11,17 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
+app.use(bodyParser.raw({ type: 'application/json' }));
 app.use(express.static('public'));
 
 // Import routes
 const omniPayRoutes = require('./routes/omnipay');
 const independentGatewayRoutes = require('./routes/independent-gateway');
+const productionCashfreeRoutes = require('./routes/production-cashfree');
 
 app.use('/api/omnipay', omniPayRoutes);
 app.use('/api/gateway', independentGatewayRoutes);
+app.use('/api/production', productionCashfreeRoutes);
 
 // In-memory storage (use Redis/MongoDB in production)
 const wallets = new Map();
@@ -297,8 +301,8 @@ app.get('/api/stats', (req, res) => {
         '✅ Stealth Addresses (Anonymous)',
         '✅ Zero Knowledge Proofs',
         '✅ Tor-Ready Architecture',
-        '✅ Independent Payment Gateway (PayX)',
-        '✅ Direct UPI/Crypto/Bank Integration'
+        '✅ Production Payment Gateway (Cashfree)',
+        '✅ Real Transaction Processing'
       ]
     }
   });
@@ -308,28 +312,36 @@ app.get('/api/stats', (req, res) => {
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'online', 
-    privacy: 'maximum',
-    features: ['GhostPay', 'OmniPay', 'PayX']
+    environment: process.env.NODE_ENV || 'development',
+    features: ['GhostPay', 'OmniPay', 'PayX', 'Production Gateway']
   });
+});
+
+// Root redirect
+app.get('/', (req, res) => {
+  res.redirect('/production-payment.html');
 });
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`\n🚀 ============================================`);
-  console.log(`   PAYMENT GATEWAY SERVER RUNNING`);
+  console.log(`\n💳 ============================================`);
+  console.log(`   PRODUCTION PAYMENT GATEWAY`);
   console.log(`   ============================================\n`);
   console.log(`   🌐 Server: http://localhost:${PORT}`);
+  console.log(`   🔒 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`\n   📱 APPLICATIONS:`);
+  console.log(`   ├─ Production Gateway:  /production-payment.html`);
   console.log(`   ├─ PayX (Independent):  /payx.html`);
   console.log(`   ├─ OmniPay (Multi):     /omnipay.html`);
   console.log(`   └─ GhostPay (Anonymous):/index.html`);
   console.log(`\n   ✨ FEATURES:`);
-  console.log(`   ├─ 🏦 Direct UPI Integration`);
-  console.log(`   ├─ 💰 Direct Crypto Payments`);
-  console.log(`   ├─ 🏧 Direct Bank Transfers`);
-  console.log(`   ├─ 🔄 Multi-Currency Support`);
-  console.log(`   ├─ 👻 Anonymous Payments`);
-  console.log(`   └─ 🚫 NO Third-Party Fees`);
-  console.log(`\n   ⚠️  For educational purposes only`);
+  console.log(`   ├─ 💳 Cashfree Integration (UPI/Cards)`);
+  console.log(`   ├─ 🌍 Stripe Integration (International)`);
+  console.log(`   ├─ 💰 Crypto Payments (USDT/BTC/ETH)`);
+  console.log(`   ├─ 🔄 Real Transaction Processing`);
+  console.log(`   ├─ 🔔 Webhook Support`);
+  console.log(`   ├─ 💸 Refund Management`);
+  console.log(`   └─ 📊 Payment Analytics`);
+  console.log(`\n   ⚠️  Production-ready for real transactions`);
   console.log(`   ============================================\n`);
 });
