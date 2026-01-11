@@ -1,7 +1,7 @@
 {
-  "name": "omnipay-universal-gateway",
-  "version": "2.0.0",
-  "description": "Universal payment gateway - Accept UPI, Cards, Crypto (USD, INR, USDT) with auto currency conversion",
+  "name": "production-payment-gateway",
+  "version": "3.0.0",
+  "description": "Production-ready payment gateway with Cashfree, Stripe, and Crypto support for real transactions",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -16,8 +16,9 @@
     "body-parser": "^1.20.2",
     "axios": "^1.6.2",
     "qrcode": "^1.5.3",
-    "razorpay": "^2.9.2",
+    "cashfree-pg": "^2.0.8",
     "stripe": "^14.10.0",
+    "btcpay-greenfield-node-client": "^2.3.0",
     "mongoose": "^8.0.3",
     "redis": "^4.6.0",
     "nodemailer": "^6.9.7",
@@ -26,28 +27,34 @@
     "express-rate-limit": "^7.1.5",
     "helmet": "^7.1.0",
     "morgan": "^1.10.0",
-    "winston": "^3.11.0"
+    "winston": "^3.11.0",
+    "express-validator": "^7.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0",
+    "eslint": "^8.56.0"
   },
   "keywords": [
     "payment-gateway",
-    "razorpay",
+    "cashfree",
     "stripe",
     "crypto",
     "usdt",
     "upi",
-    "multi-currency",
-    "omnipay",
-    "ghostpay",
-    "anonymous",
-    "privacy"
+    "production",
+    "real-transactions",
+    "india-payments",
+    "international-payments"
   ],
-  "author": "OmniPay Team",
+  "author": "Production Payment Gateway Team",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/samarthkumar096-commits/ghostpay-anonymous-gateway"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   }
 }
